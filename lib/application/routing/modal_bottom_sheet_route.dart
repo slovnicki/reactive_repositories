@@ -1,3 +1,6 @@
+// Copied from https://github.com/flutter/flutter/blob/master/packages/flutter/lib/src/material/bottom_sheet.dart
+// where it is private :/
+
 import 'package:flutter/material.dart';
 
 class ModalBottomSheetRoute<T> extends PopupRoute<T> {

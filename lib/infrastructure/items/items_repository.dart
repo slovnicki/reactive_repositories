@@ -2,26 +2,26 @@ import 'package:reactive_repositories/domain/items/item.dart';
 import 'package:reactive_repositories/domain/items/items_repository.dart';
 
 class FakeItemsRepository extends ItemsRepository {
-  List<Item> _items = [];
+  List<Item> _currentItems = [];
 
   @override
   Future<void> fetchAll({bool force = false}) async {
-    if (_items.isEmpty || force) {
+    if (_currentItems.isEmpty || force) {
       await Future.delayed(const Duration(milliseconds: 400));
-      _items = List.generate(12, (_) => Item.fake());
+      _currentItems = List.generate(12, (_) => Item.fake());
     }
 
-    add(_items);
+    addToStream(_currentItems);
   }
 
   @override
   Future<Item?> getOne(int itemId) async {
-    if (_items.isEmpty) {
+    if (_currentItems.isEmpty) {
       await fetchAll();
     }
 
     try {
-      return _items.firstWhere((item) => item.id == itemId);
+      return _currentItems.firstWhere((item) => item.id == itemId);
     } catch (e) {
       return null;
     }
@@ -32,23 +32,22 @@ class FakeItemsRepository extends ItemsRepository {
     await Future.delayed(const Duration(milliseconds: 200));
 
     final item = await getOne(itemId);
-
     if (item == null) {
       return null;
     }
 
-    final newItem = item.copyWith(isFavorite: !item.isFavorite);
-    _update(newItem);
-    add(_items);
+    final toggledItem = item.copyWith(isFavorite: !item.isFavorite);
+    _updateCurrentItemsWith(toggledItem);
 
-    return newItem;
+    addToStream(_currentItems);
+
+    return toggledItem;
   }
 
-  void _update(Item item) {
-    final index = _items.indexWhere((it) => it.id == item.id);
-
+  void _updateCurrentItemsWith(Item item) {
+    final index = _currentItems.indexWhere((it) => it.id == item.id);
     if (index != -1) {
-      _items[index] = item;
+      _currentItems[index] = item;
     }
   }
 }

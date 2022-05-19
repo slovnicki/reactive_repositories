@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reactive_repositories/application/items/list/cubit/list_cubit.dart';
 import 'package:reactive_repositories/presentation/items/widgets/item_list_tile.dart';
 
-class ItemsScreen extends StatelessWidget {
-  const ItemsScreen({Key? key}) : super(key: key);
+class ListScreen extends StatelessWidget {
+  const ListScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

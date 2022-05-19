@@ -5,18 +5,16 @@ import 'package:reactive_repositories/application/routing/delegate.dart';
 
 void main() {
   registerRepositories();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
-
-  final routerDelegate = createRouterDelegate();
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routerDelegate: routerDelegate,
+      routerDelegate: rootRouterDelegate,
       routeInformationParser: BeamerParser(),
     );
   }

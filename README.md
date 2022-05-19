@@ -2,6 +2,10 @@
 
 An example of listening to a `Stream` from repository layer (instead of explicitly using get/fetch) as a solution for BLoC to BLoC communication, inspired by [updated documentation at bloc library](https://bloclibrary.dev/#/architecture?id=bloc-to-bloc-communication) and [this tweet](https://twitter.com/slovnicki/status/1524065225959481344?s=20&t=GwAhl9dC-RcFRMiA7JmOTg).
 
+### Check out the **[Medium article](https://medium.com/@lovnicki.sandro/blocs-with-reactive-repository-5fd440d3b1dc)** that explains everything in more detail
+
+---
+
 ## Example
 
 The main thing to notice is how `ListCubit` reloads (and sorts by favorites) the `ItemsScreen` in reaction to `DetailsCubit` successfully toggling `isFavorite`, but `DetailsCubit` has no reference to `ListCubit`.
@@ -32,7 +36,7 @@ class ListCubit extends Cubit<ListState> {
 
   void _subscribe() {
     _subscription = _itemsRepository.items.listen(
-      (items) async {
+      (items) {
         final sortedItems = _sorter.sortByFavorite(items);
         emit(ListLoaded(sortedItems));
       },
@@ -83,7 +87,7 @@ class DetailsCubit extends Cubit<DetailsState> {
     if (_currentItem != null) {
       emit(DetailsLoaded(_currentItem!));
     } else {
-      emit(const DetailsError('Failed to toggleFavorite'));
+      emit(const DetailsError('Failed to toggle favorite'));
     }
   }
 }
@@ -94,8 +98,10 @@ class DetailsCubit extends Cubit<DetailsState> {
 ```dart
 abstract class ItemsRepository {
   final _controller = StreamController<List<Item>>();
-  void add(List<Item> items) => _controller.sink.add(items);
+
   Stream<List<Item>> get items => _controller.stream;
+
+  void addToStream(List<Item> items) => _controller.sink.add(items);
 
   Future<void> fetchAll({bool force = false});
   Future<Item?> getOne(int itemId);
@@ -103,26 +109,26 @@ abstract class ItemsRepository {
 }
 
 class FakeItemsRepository extends ItemsRepository {
-  List<Item> _items = [];
+  List<Item> _currentItems = [];
 
   @override
   Future<void> fetchAll({bool force = false}) async {
-    if (_items.isEmpty || force) {
+    if (_currentItems.isEmpty || force) {
       await Future.delayed(const Duration(milliseconds: 400));
-      _items = List.generate(12, (_) => Item.fake());
+      _currentItems = List.generate(12, (_) => Item.fake());
     }
 
-    add(_items);
+    addToStream(_currentItems);
   }
 
   @override
   Future<Item?> getOne(int itemId) async {
-    if (_items.isEmpty) {
+    if (_currentItems.isEmpty) {
       await fetchAll();
     }
 
     try {
-      return _items.firstWhere((item) => item.id == itemId);
+      return _currentItems.firstWhere((item) => item.id == itemId);
     } catch (e) {
       return null;
     }
@@ -133,23 +139,22 @@ class FakeItemsRepository extends ItemsRepository {
     await Future.delayed(const Duration(milliseconds: 200));
 
     final item = await getOne(itemId);
-
     if (item == null) {
       return null;
     }
 
-    final newItem = item.copyWith(isFavorite: !item.isFavorite);
-    _update(newItem);
-    add(_items);
+    final toggledItem = item.copyWith(isFavorite: !item.isFavorite);
+    _updateCurrentItemsWith(toggledItem);
 
-    return newItem;
+    addToStream(_currentItems);
+
+    return toggledItem;
   }
 
-  void _update(Item item) {
-    final index = _items.indexWhere((it) => it.id == item.id);
-
+  void _updateCurrentItemsWith(Item item) {
+    final index = _currentItems.indexWhere((it) => it.id == item.id);
     if (index != -1) {
-      _items[index] = item;
+      _currentItems[index] = item;
     }
   }
 }

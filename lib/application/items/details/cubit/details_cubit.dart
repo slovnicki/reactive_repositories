@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:reactive_repositories/application/di/get_it.dart';
 import 'package:reactive_repositories/domain/items/item.dart';
 import 'package:reactive_repositories/domain/items/items_repository.dart';
@@ -42,7 +41,7 @@ class DetailsCubit extends Cubit<DetailsState> {
     if (_currentItem != null) {
       emit(DetailsLoaded(_currentItem!));
     } else {
-      emit(const DetailsError('Failed to toggleFavorite'));
+      emit(const DetailsError('Failed to toggle favorite'));
     }
   }
 }

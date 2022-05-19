@@ -19,7 +19,7 @@ class ItemsBeamLocation extends BeamLocation<BeamState> {
         key: const ValueKey('items'),
         child: BlocProvider(
           create: (_) => ListCubit()..load(),
-          child: const ItemsScreen(),
+          child: const ListScreen(),
         ),
       ),
     ];
@@ -31,7 +31,7 @@ class ItemsBeamLocation extends BeamLocation<BeamState> {
           key: ValueKey('item-$itemId'),
           child: BlocProvider(
             create: (_) => DetailsCubit()..load(itemId),
-            child: const ItemDetails(),
+            child: const DetailsModal(),
           ),
           routeBuilder: (context, settings, child) => _responsiveDetailsRoute(
             context: context,

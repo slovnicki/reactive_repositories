@@ -29,7 +29,7 @@ class ListCubit extends Cubit<ListState> {
 
   void _subscribe() {
     _subscription = _itemsRepository.items.listen(
-      (items) async {
+      (items) {
         final sortedItems = _sorter.sortByFavorite(items);
         emit(ListLoaded(sortedItems));
       },
