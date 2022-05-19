@@ -5,7 +5,7 @@ import 'package:reactive_repositories/domain/items/item.dart';
 abstract class ItemsRepository {
   final _controller = StreamController<List<Item>>();
 
-  Stream<List<Item>> get items => _controller.stream;
+  Stream<List<Item>> get items => _controller.stream.asBroadcastStream();
 
   void addToStream(List<Item> items) => _controller.sink.add(items);
 
