@@ -6,6 +6,8 @@ An example of listening to a `Stream` from repository layer (instead of explicit
 
 ---
 
+![example](https://github.com/slovnicki/reactive_repositories/blob/master/diagram.png)
+
 ## Example
 
 The main thing to notice is how `ListCubit` reloads (and sorts by favorites) the `ItemsScreen` in reaction to `DetailsCubit` successfully toggling `isFavorite`, but `DetailsCubit` has no reference to `ListCubit`.
